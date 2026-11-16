@@ -135,3 +135,59 @@ Things to recheck before publishing:
   arithmetic.
 - **Simplification:** "taxable income" is one input. In practice it is salary
   minus your own retirement contributions and other deductions.
+
+### Step 3: tagged rates and the price of one withdrawal (done)
+
+Files: `rates.py`, `solver.py`, `withdrawal.py`.
+
+**Rates carry a basis (`rates.py`).**
+
+- Every rate is a `Rate` tagged REAL (above inflation) or NOMINAL (money terms).
+  Comparing a real rate with a nominal one raises `BasisMismatchError`. This is
+  how "real-vs-real or nominal-vs-nominal" is enforced, not just promised.
+- Conversion uses the exact relation (1 + nominal) = (1 + real) × (1 + inflation).
+  So 4% real with 3% inflation is 7.12% nominal, not 7%.
+- "Nominal" also has a compounding meaning. A loan quoted at 12% a year, charged
+  monthly, is 1% a month, which is 12.68% effective. Every `Rate` holds an
+  effective annual rate; quoted loan rates are converted on the way in.
+
+**The price of one withdrawal (`withdrawal.py`).** Everything is in today's rands.
+
+1. Cash in hand = gross − extra income tax − admin fee.
+2. Retirement money given up = gross × (1 + real return)^years, less the
+   lump-sum tax it would have borne at retirement.
+3. Implied rate: (1 + i)^years = money given up ÷ cash in hand.
+
+With one amount in and one out, step 3 has a closed form, and the tests confirm
+it against a numerical solver. It can be rewritten as
+
+    1 + i = (1 + real return) × [(1 − exit tax rate) ÷ (1 − tax rate now)]^(1/years)
+
+which is the formula to remember. The implied rate is the fund's return plus the
+tax gap spread over the years to retirement.
+
+**What the model shows** (R10,000 gross, R300,000 income, 4% real return, no fee):
+
+| Age | Cash in hand | Retirement money given up | Cost per R1 received | Implied real rate |
+|---|---|---|---|---|
+| 30 | R7,400 | R39,461 | R5.33 | 4.9% |
+| 45 | R7,400 | R21,911 | R2.96 | 5.6% |
+| 60 | R7,400 | R12,167 | R1.64 | 10.5% |
+| 64 | R7,400 | R10,400 | R1.41 | 40.5% |
+
+- **In rands, withdrawing young costs most** (compounding).
+- **As a rate, withdrawing near retirement costs most**, because 26% tax paid up
+  front is spread over fewer years. At 64 you pay 26% tax to get money one year
+  before you could have had it tax-free.
+- If no tax is lost either side (income under R99,000), the implied rate is
+  exactly the fund's return. A test checks this.
+
+**Limits of this number.** The implied rate runs to retirement, so it cannot be
+compared directly with a 3-year loan. Step 4 makes the like-for-like comparison.
+
+**Simplifications:**
+
+- The admin fee is taken off the cash received; tax is charged on the full gross.
+- The whole amount given up is treated as cash on the lump-sum table.
+- Money given up is valued at one fixed return. Uncertainty is the later
+  stochastic step.
