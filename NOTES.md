@@ -286,3 +286,35 @@ poorer by the full hole. The model reports the minimum share that must be saved.
 **Headlines (`headline.py`).** Four cases, each tested: instalments spent; the
 loan is cheaper even if everything is saved; withdrawing wins at the planned
 saving; withdrawing wins only above a minimum saving share.
+
+### Step 7: the app (done) — `app.py`
+
+- **What:** a single-page Streamlit app. Inputs are in the sidebar; the page
+  leads with one plain-English headline, then three figures for the withdrawal,
+  three for the loan, and a table showing how the verdict changes across the
+  three plans for the avoided instalments.
+- **No calculation in the app.** It only collects inputs and displays results
+  from the `twopot` package, so everything it shows is covered by the unit tests.
+- **Defaults:** age 35, R300,000 income, R10,000 withdrawal, a personal loan at
+  the legal maximum rate and fees over 36 months, instalments saved after tax.
+  The loan defaults are the legal caps because they are the only loan figures I
+  could verify. A real quote will usually be lower, which favours the loan.
+- **Tests (`tests/test_app.py`):** Streamlit's `AppTest` runs the page without a
+  browser and checks the headline in four situations, including bad inputs.
+- **Launching:** `streamlit run app.py`, then open http://localhost:8501. The
+  first time, Streamlit asks for an email address; press Enter to skip.
+- **Checked on 2026-11-16:** 84 tests pass, and the app started and served its
+  page locally.
+
+## Not built yet
+
+- **Step 5, the habit:** the same withdrawal every year, validated against the
+  structural two-thirds result.
+- **Step 6, uncertainty:** random investment returns. Needs a sourced volatility
+  figure or a clearly labelled assumption.
+- **Step 8, deployment:** Streamlit Community Cloud, with a newer Python version.
+- **Pension view:** converting the lump sum given up into monthly income needs a
+  sourced annuity rate.
+- **Annuitising the savings pot** instead of taking cash (income tax in
+  retirement instead of the lump-sum table).
+- **Frozen tax tables** as a sensitivity toggle.
