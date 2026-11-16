@@ -1,0 +1,25 @@
+# Virtual environments (the real one lives outside OneDrive, see NOTES.md)
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Editors and OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Claude Code local settings
+.claude/
