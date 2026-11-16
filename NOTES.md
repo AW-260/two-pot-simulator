@@ -191,3 +191,98 @@ compared directly with a 3-year loan. Step 4 makes the like-for-like comparison.
 - The whole amount given up is treated as cash on the lump-sum table.
 - Money given up is valued at one fixed return. Uncertainty is the later
   stochastic step.
+
+### Step 4: the like-for-like loan comparison (done)
+
+Files: `loan.py`, `compare.py`, `headline.py`.
+
+**The loan (`loan.py`).** A level-instalment loan with an initiation fee (added to
+the balance) and a monthly service fee. Its cost is reported as an **all-in
+effective annual rate**: the rate that equates the cash received with every
+payment made. Fees dominate small loans. A R7,400 loan over 36 months at the
+legal maximum of 28.25% costs 32.2% all-in with no fees and **63.2% with the
+maximum legal fees** (R805 initiation, R60 a month).
+
+**The comparison (`compare.py`).** Two ways to get the same cash today:
+
+- **Withdraw:** no loan, so no instalments, but a hole in the retirement fund.
+- **Borrow:** the fund stays whole, and you pay instalments.
+
+To make them comparable, ask what happens to the instalments the withdrawer
+avoids. Three plans:
+
+1. **Spend them.** The hole stays.
+2. **Save them after tax** (for example a tax-free savings account).
+3. **Pay them into the retirement fund** as extra contributions. These are
+   deductible, so each take-home rand buys more than a rand in the fund, and the
+   tax paid on the withdrawal is recovered.
+
+Under plans 2 and 3 both strategies have the same take-home cash every month, so
+they can be judged on one number: retirement money in today's rands.
+
+**Real-vs-real.** The engine is in real terms. Loan instalments are fixed in money
+terms, so each is deflated by inflation before it is grown at the real return.
+Inflation enters in that one place. The two rates shown side by side (the loan's
+all-in cost and the break-even) are both nominal, both effective annual, both
+over the loan's own term.
+
+**The break-even.** Find the level instalment at which saving all of it exactly
+refills the hole, then express that instalment as an all-in loan cost.
+Withdrawing wins against any loan costing more than that.
+
+- *Design change:* my first version solved for a break-even *quoted* rate with
+  the loan's fees held fixed. With fees included that gave nonsense such as "0%".
+  An all-in cost depends only on the cash flows, so it is the right yardstick. A
+  test confirms fees move the loan's cost but not the break-even.
+
+**What the model shows** (R10,000 gross, 36-month loan, 4% real, 3% inflation):
+
+| Taxable income | Tax on the withdrawal | Break-even, saving after tax | Break-even, fund contributions |
+|---|---|---|---|
+| R60,000 | 0% | 7.1% | 7.1% |
+| R150,000 | 18% | 23.0% | 7.1% |
+| R300,000 | 26% | 32.6% | 7.1% |
+| R450,000 | 31% | 39.9% | 7.1% |
+| R600,000 | 36% | 48.4% | 7.1% |
+| R1,000,000 | 41% | 58.5% | 7.1% |
+
+How to read it:
+
+- **7.1% is the fund's own return in money terms** (1.04 × 1.03 − 1). When no tax
+  is lost, withdrawing beats a loan exactly when the loan costs more than the
+  fund earns. Two tests check this equality to six decimal places.
+- **Saving after tax, the tax on the withdrawal is never recovered** and has only
+  the loan term to be made up. The higher your tax band, the more expensive a
+  loan must be before withdrawing wins.
+- **At R300,000 the break-even (32.6%) is almost exactly the cost of a
+  legal-maximum loan without fees (32.2%).** With maximum fees that loan costs
+  63.2%, so withdrawing wins, provided at least 77% of each avoided instalment
+  is saved.
+- **Shorter loans raise the break-even:** 92.9% at 12 months, 46.2% at 24, 32.6%
+  at 36, 22.4% at 60 (R300,000 income).
+- **The break-even does not depend on age.** Growth to retirement multiplies both
+  the hole and the savings that refill it, so it cancels. Age changes the rand
+  amounts, not the verdict. Only exit tax can break this.
+- **Sensitivity** (R300,000 income): 29.8% at a 2% real return, 35.5% at 6%,
+  35.5% at 5% inflation.
+
+**The behavioural point.** Every "withdrawing wins" result is conditional on
+actually saving the avoided instalments. Under plan 1 the member is simply
+poorer by the full hole. The model reports the minimum share that must be saved.
+
+**Simplifications and caveats:**
+
+- Plan 2 assumes growth and proceeds are tax-free. The app warns when the annual
+  saving exceeds the R46,000 tax-free savings limit.
+- Plan 3 assumes the extra contributions are fully deductible. The app warns
+  when they would breach 27.5% of income or R430,000.
+- Plan 3 treats money put back like the savings-pot money it replaces. In
+  reality two-thirds of any new contribution goes to the retirement component,
+  which cannot be withdrawn and must buy an annuity. Plan 3 is therefore less
+  flexible than the model suggests.
+- The gross-up for plan 3 is worked out on the first year's contributions.
+- The loan must end before retirement.
+
+**Headlines (`headline.py`).** Four cases, each tested: instalments spent; the
+loan is cheaper even if everything is saved; withdrawing wins at the planned
+saving; withdrawing wins only above a minimum saving share.
