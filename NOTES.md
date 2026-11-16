@@ -113,3 +113,25 @@ Things to recheck before publishing:
   and `tests/test_params.py` fails if a constant has neither a source nor a stated
   assumption. That turns "source every statistic" into something the test suite
   enforces.
+
+### Step 2: tax engine (done) — `src/twopot/tax.py`
+
+- **What:** income tax with age rebates, the extra tax caused by a withdrawal,
+  and the retirement lump-sum table.
+- **The two tables are the heart of the project.** A withdrawal before retirement
+  is taxed as income at the marginal rate with no tax-free amount. The same money
+  left until retirement comes out on the lump-sum table, where the first R550,000
+  is tax-free. The gap between the two is the tax cost of withdrawing early.
+- **Tax on a withdrawal** = tax on (income + withdrawal) − tax on income. This is
+  SARS's "annual payment/bonus" method. It is more accurate than multiplying by
+  one marginal rate, because a withdrawal can straddle two bands or lift someone
+  above the tax threshold.
+- **Lump sums are cumulative.** The table applies to the lifetime running total,
+  so tax on a lump sum = tax on (earlier + this) − tax on earlier.
+- **How it is tested:** SARS prints the tax due at the bottom of each band (for
+  example "R44,118 + 26% above R245,100"). The code stores only limits and rates,
+  and the tests check that it reproduces every printed base amount and all three
+  published tax thresholds. So the tests compare against SARS, not against my own
+  arithmetic.
+- **Simplification:** "taxable income" is one input. In practice it is salary
+  minus your own retirement contributions and other deductions.
