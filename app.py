@@ -5,7 +5,17 @@ Run with:  streamlit run app.py
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+# Streamlit Community Cloud installs requirements.txt but not this package, so
+# fall back to importing it straight from the source folder.
+try:
+    import twopot  # noqa: F401
+except ModuleNotFoundError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from twopot import params
 from twopot.compare import PutBack, Scenario, compare
@@ -27,6 +37,12 @@ PLAN_LABELS = {
     PutBack.SAVE_AFTER_TAX: "Save them (after-tax savings)",
     PutBack.FUND_CONTRIBUTIONS: "Pay them into my retirement fund",
 }
+
+UPPER_BOUND_NOTE = (
+    "Paying into your fund is an upper bound: two-thirds of new contributions "
+    "are locked in until retirement and must buy a pension, so this money is "
+    "less flexible than the savings-pot money it replaces."
+)
 
 _PLAIN_WORDS = {
     "nca": "credit law",
@@ -98,9 +114,13 @@ with st.sidebar:
         )
         fee_choice = st.radio(
             "Loan fees",
-            ["Legal maximum", "None", "Enter my own"],
+            ["None", "Legal maximum", "Enter my own"],
             help="The legal maximum is an initiation fee of R165 plus 10% of the "
             "loan above R1,000 (capped at R1,050) and R60 a month.",
+        )
+        st.caption(
+            "The legal maximum is a worst case and makes the loan look as "
+            "expensive as the law allows. If you have a quote, enter its fees."
         )
         own_initiation_fee = own_service_fee = 0
         if fee_choice == "Enter my own":
@@ -198,6 +218,8 @@ headline = comparison_headline(result) if result else price_headline(price)
 st.title(headline.title)
 st.write(headline.detail)
 if result:
+    if plan is PutBack.FUND_CONTRIBUTIONS:
+        st.info(UPPER_BOUND_NOTE)
     for warning in result.warnings:
         st.warning(warning)
 
@@ -257,15 +279,17 @@ if result:
         break_even = outcome.break_even_loan_cost
         threshold = f"{percent(break_even)} a year" if break_even is not None else "Never"
         verdict = "better off" if outcome.advantage >= 0 else "poorer"
+        label = PLAN_LABELS[put_back]
+        if put_back is PutBack.FUND_CONTRIBUTIONS:
+            label += " (upper bound)"
         table.append(
-            f"| {PLAN_LABELS[put_back]} | {threshold} | "
-            f"{rands(abs(outcome.advantage))} {verdict} |"
+            f"| {label} | {threshold} | {rands(abs(outcome.advantage))} {verdict} |"
         )
     st.markdown("\n".join(table))
     st.caption(
         "Rows two and three assume you save every rand of every instalment. "
-        "Retirement amounts are in today's money. Loan costs are effective "
-        "annual rates in money terms, over the loan's own term."
+        f"{UPPER_BOUND_NOTE} Retirement amounts are in today's money. Loan costs "
+        "are effective annual rates in money terms, over the loan's own term."
     )
 
 # --- Method and sources ------------------------------------------------------

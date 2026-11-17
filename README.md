@@ -18,13 +18,17 @@ loan:
 |---|---|
 | Spend the avoided instalments | Never. You retire R32,434 poorer (age 35, today's money) |
 | Save them after tax | 32.6% a year |
-| Pay them back into your retirement fund | 7.1% a year, the fund's own return |
+| Pay them back into your retirement fund (upper bound) | 7.1% a year, the fund's own return |
 
 The 32.6% rises with your tax band (23.0% on R150,000, 48.4% on R600,000),
 because the tax paid on the withdrawal is never recovered. A loan at the legal
 maximum rate of 28.25% costs 32.2% a year all-in without fees and 63.2% with the
 maximum legal fees, so the same withdrawal can be the better or the worse choice
 depending on the loan's fees and on the member's discipline.
+
+The last row is an upper bound: two-thirds of new contributions are locked in
+until retirement and must buy a pension, so that money is less flexible than the
+savings-pot money it replaces.
 
 These figures assume a 4% real return and 3% inflation. Both can be changed in
 the app.

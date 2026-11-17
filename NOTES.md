@@ -295,16 +295,39 @@ saving; withdrawing wins only above a minimum saving share.
   three plans for the avoided instalments.
 - **No calculation in the app.** It only collects inputs and displays results
   from the `twopot` package, so everything it shows is covered by the unit tests.
-- **Defaults:** age 35, R300,000 income, R10,000 withdrawal, a personal loan at
-  the legal maximum rate and fees over 36 months, instalments saved after tax.
-  The loan defaults are the legal caps because they are the only loan figures I
-  could verify. A real quote will usually be lower, which favours the loan.
+- **Defaults:** age 35, R300,000 income, R10,000 withdrawal, a 36-month personal
+  loan at the legal maximum rate with **no fees**, instalments saved after tax.
+  The default headline is then "Take the loan", by R128: the loan costs 32.2%
+  against a 32.6% break-even.
+- **Why no fees by default (changed 2026-11-17):** the legal maximum fees are a
+  worst case and lift the loan's cost to 63.2%, which tilted the first thing a
+  visitor sees towards withdrawing. Fees are now opt-in, with a note saying the
+  legal maximum is a worst case. The default *rate* is still the legal cap,
+  because it is the only loan rate I could verify.
+- **"Pay into my fund" is labelled an upper bound (changed 2026-11-17):** in the
+  table, in its caption, and in a note when that plan is selected. Two-thirds of
+  new contributions are locked into the retirement component.
 - **Tests (`tests/test_app.py`):** Streamlit's `AppTest` runs the page without a
   browser and checks the headline in four situations, including bad inputs.
 - **Launching:** `streamlit run app.py`, then open http://localhost:8501. The
   first time, Streamlit asks for an email address; press Enter to skip.
-- **Checked on 2026-11-16:** 84 tests pass, and the app started and served its
+- **Checked on 2026-11-17:** 87 tests pass, and the app started and served its
   page locally.
+
+### Step 8: GitHub and deployment (in progress)
+
+- **How the hosted app finds the code:** Streamlit Community Cloud installs
+  `requirements.txt` but does not install this package. `app.py` therefore falls
+  back to importing `twopot` from the `src` folder. Checked by uninstalling the
+  package locally and running the app.
+- **`requirements.txt`** lists only Streamlit. Local development still uses
+  `pip install -e ".[dev]"`, which also brings in pytest.
+- **Deploying:** at share.streamlit.io choose "Create app", pick the GitHub
+  repository, branch `main`, main file `app.py`. Under "Advanced settings" pick
+  Python 3.12. Every later push to `main` redeploys automatically.
+- **VS Code:** if the editor says packages are not installed, choose "Python:
+  Select Interpreter" and point it at
+  `%USERPROFILE%\.venvs\two-pot-simulator\Scripts\python.exe`.
 
 ## Not built yet
 
@@ -312,7 +335,6 @@ saving; withdrawing wins only above a minimum saving share.
   structural two-thirds result.
 - **Step 6, uncertainty:** random investment returns. Needs a sourced volatility
   figure or a clearly labelled assumption.
-- **Step 8, deployment:** Streamlit Community Cloud, with a newer Python version.
 - **Pension view:** converting the lump sum given up into monthly income needs a
   sourced annuity rate.
 - **Annuitising the savings pot** instead of taking cash (income tax in
