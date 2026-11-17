@@ -315,7 +315,10 @@ saving; withdrawing wins only above a minimum saving share.
 - **Checked on 2026-11-17:** 87 tests pass, and the app started and served its
   page locally.
 
-### Step 8: GitHub and deployment (in progress)
+### Step 8: GitHub and deployment (done 2026-11-17)
+
+- **Repository:** https://github.com/AW-260/two-pot-simulator
+- **Live app:** https://two-pot-simulator.streamlit.app/ (public; no sign-in needed)
 
 - **How the hosted app finds the code:** Streamlit Community Cloud installs
   `requirements.txt` but does not install this package. `app.py` therefore falls

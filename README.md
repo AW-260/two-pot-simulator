@@ -6,6 +6,8 @@ receive the after-tax cash today and repay it with the retirement money you give
 up. It then answers the question people actually face: **is withdrawing cheaper
 than the loan I would otherwise take?**
 
+**Try it: https://two-pot-simulator.streamlit.app/**
+
 ## What it finds
 
 The answer depends less on the loan than on what you do with the instalments you
@@ -74,5 +76,5 @@ This is an educational model, not financial advice.
 ## Status
 
 Version 1: tax engine, single-withdrawal pricing, loan comparison and a simple
-app. Planned: repeated annual withdrawals, uncertain investment returns, and a
-public deployment.
+app, deployed on Streamlit Community Cloud. Planned: repeated annual withdrawals
+and uncertain investment returns.
