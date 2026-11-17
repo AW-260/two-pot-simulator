@@ -23,6 +23,7 @@ the member gets in exchange, and compared with what.
 - The virtual environment is **outside OneDrive** so it is not synced:
   `%USERPROFILE%\.venvs\two-pot-simulator`
 - Activate it (PowerShell): `& "$env:USERPROFILE\.venvs\two-pot-simulator\Scripts\Activate.ps1"`
+- Personal notes live in `PRIVATE_NOTES.md`, which is git-ignored.
 - Install after cloning or after changing dependencies: `pip install -e ".[dev]"`
 - Run the tests: `pytest`
 - Launch the app: `streamlit run app.py`

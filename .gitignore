@@ -21,5 +21,8 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# Personal notes that stay off GitHub
+PRIVATE_NOTES.md
+
 # Claude Code local settings
 .claude/
